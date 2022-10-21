@@ -5,7 +5,7 @@ export default function Upcoming() {
     <Box
     sx={{
         width:"fit-content",
-        backgroundColor:"#cf5151"
+        backgroundColor:"#42e34f"
 
     }}
 

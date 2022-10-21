@@ -10,7 +10,7 @@ export default function Active() {
     }}
 
     >
-        <Typography sx={{}}>Active</Typography>
+        <Typography sx={{color:"green"}}>Active</Typography>
     </Box>
   )
 }

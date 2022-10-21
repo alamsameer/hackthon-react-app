@@ -5,7 +5,7 @@ export default function Past() {
     <Box
     sx={{
         width:"fit-content",
-        backgroundColor:"#cf5151"
+        backgroundColor:"#f52a2a"
 
     }}
 

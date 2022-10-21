@@ -1,11 +1,18 @@
 import { Box, CardActionArea, CardMedia, Card, Typography, CardContent } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import Past from './Past';
+import Active from './Active';
+import Upcoming from './Upcoming'
 import img1 from "../assets/cardimage/Group 1000002466.png"
-
+import localStorageContext from '../context/LocalStorage';
 export default function ChallengeCard({ challenge }) {
-  const { challengeName, EndDate, description, img, level, startDate } = challenge
+  const{dispatch}=useContext(localStorageContext )
+  const { challengeName, EndDate, img, startDate } = challenge
   const [currstatus,setStatus]=useState("")
   const[timeLeft,setTimeLeft]=useState({})
+  let tag;
+  let endedOn=new Date (EndDate)
+  
   const countDown = () => {
     var startingDate = new Date(startDate); 
     var startms = startingDate.getTime();
@@ -16,18 +23,20 @@ export default function ChallengeCard({ challenge }) {
     if(currms<startms){
       // upcoming
       setStatus("upcoming")
+      dispatch({type:'addstatus',payload:{name:challengeName,status:"upcoming"}})
      let time= gettime(currms,startms)
      return time
     }
     else if(startms<currms && currms<endms){
       // active
-      
-      setStatus("Active")
+      setStatus("active")
+      dispatch({type:'addstatus',payload:{name:challengeName,status:"active"}})
       let time =gettime(currms,endms)
       return time 
     }
     else{
       // past
+      dispatch({type:'addstatus',payload:{name:challengeName,status:"past"}})
       setStatus("past")
       return EndDate
     }
@@ -44,14 +53,24 @@ export default function ChallengeCard({ challenge }) {
     let ltimeLeft={days,hours,minutes,sec}
     return ltimeLeft
   }
-  
-
   useEffect(()=>{
     const timer=setInterval(()=>{
       setTimeLeft(countDown())
     },1000)
     return ()=>clearTimeout(timer)
   },[])
+  const checkStatus=()=>{
+    if (currstatus === "active"){
+      tag=<Active/>
+    }
+    else if (currstatus ==="upcoming"){
+      tag=<Upcoming/>
+    }
+    else{
+      tag=<Past/>
+    }
+  }
+  checkStatus()
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardActionArea>
@@ -67,15 +86,15 @@ export default function ChallengeCard({ challenge }) {
             justifyContent="center"
             alignItems="center"
           >
-            <Typography sx={{ backgroundColor: "green", padding: "5px", color: "white", fontSize: "10px", borderRadius: "20%", opacity: 0.5 }}>
-              {currstatus ||"active"}
-            </Typography>
+            {
+              tag
+            }
           </Box>
           <Typography gutterBottom variant="h6" component="div" sx={{ textAlign: "center" }}>
             {challengeName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            DAYS {timeLeft.days} : HOURS {timeLeft.hours} : MINUTES {timeLeft.minutes} : SEC {timeLeft.sec}
+          {currstatus ==="past"?`Ended on${endedOn.toDateString()}` : `DAYS ${timeLeft.days} : HOURS ${timeLeft.hours} : MINUTES ${timeLeft.minutes} : SEC ${timeLeft.sec}`}
           </Typography>
         </CardContent>
       </CardActionArea>
